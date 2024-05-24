@@ -25,7 +25,7 @@
 
 		<div class="mt-8 pt-8">
 			<x-forms.label>The current QR Code</x-forms.label>
-			<img src="/qr_codes/{{ $url->id }}.svg" class="h-40 w-40" />
+			<img src="{{ asset('storage/qr_codes/' . $url->id . '.svg') }}" class="h-40 w-40" />
 			<span class="mt-2 text-sm">Right click and save the QR code to use in your materials.</span>
 		</div>
 
