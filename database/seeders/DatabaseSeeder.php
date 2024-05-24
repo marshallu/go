@@ -2,22 +2,40 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Url;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class DatabaseSeeder extends Seeder
 {
     /**
-     * Seed the application's database.
+     * Run the database seeders.
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+		$possibleCharacters = 'abcdefghijkmnopqrstuvwxyz234567890';
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        DB::table('urls')->insert([
+			'id' => 'history',
+			'base_url' => 'https://www.marshall.edu/history/',
+			'long_url' => 'https://www.marshall.edu/history/',
+			'created_by' => 'cmccomas',
+			'redirect_count' => 0,
+			'last_redirected_at' => null,
+        ]);
+
+		DB::table('urls')->insert([
+			'id' => 'cyber',
+			'long_url' => 'http://www.marshall.edu/cyber/?utm_source=ncc&utm_medium=leaderboard&utm_campaign=2425',
+			'base_url' => 'http://www.marshall.edu/cyber/',
+			'utm_source' => 'ncc',
+			'utm_medium' => 'leaderboard',
+			'utm_campaign' => '2425',
+			'created_by' => 'bajus',
+			'redirect_count' => 0,
+			'last_redirected_at' => null,
         ]);
     }
 }
