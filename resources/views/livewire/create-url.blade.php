@@ -21,7 +21,10 @@
 		</div>
 
 		<div class="flex flex-col gap-8 mt-8 pt-8">
-			<h2 class="font-semibold text-lg">Custom Alias</h2>
+			<div>
+				<h2 class="font-semibold text-lg">Custom Alias</h2>
+				<div class="text-sm text-gray-600 font-semibold mt-2">For example, if you set the Custom Alias to 'admissions' the shortened URL will be https://go.marshall.edu/admissions</div>
+			</div>
 
 			<div>
 				<x-forms.label for="form.customAlias">Enter the Custom Alias (Optional)</x-forms.label>
