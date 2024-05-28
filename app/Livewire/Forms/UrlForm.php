@@ -23,13 +23,9 @@ class UrlForm extends Form
 	public $id;
 	public $long_url;
 	public $oldLongUrl;
-
 	public $base_url;
-
 	public $utm_source;
-
 	public $utm_medium;
-
 	public $utm_campaign;
 
 	#[Validate('nullable|max:24|unique:urls,id')]
@@ -106,7 +102,7 @@ class UrlForm extends Form
 		$url->last_redirected_at = now();
 		$url->save();
 
-		$this->createQrCode($url->long_url, $url->id);
+		$this->createQrCode(env('APP_URL') . '/' . $url->id, $url->id);
 
 		return redirect()->route('url.edit', $url);
 	}

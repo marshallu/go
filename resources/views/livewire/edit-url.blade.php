@@ -50,21 +50,24 @@
 			<h2 class="font-semibold text-lg">Google Campaign URL Data</h2>
 
 			<div>
+				<x-forms.label for="form.utm_campaign">Campaign Name</x-forms.label>
+				<x-forms.text-input type="text" wire:model="form.utm_campaign" id="form.utm_campaign" class="w-full" placeholder="Campaign Name" />
+				<div class="mt-2 text-sm text-gray-600">The Campaign Name should be a short, but descriptive name for the reason for communication. If you plan to have multiple communications on separate days, you can include the date in MMDDYY format at the end. You should use underscores in place of spaces in this value.</div>
+				@error('form.utm_campaign') <span class="text-red-600 font-semibold mt-2">{{ $message }}</span> @enderror
+			</div>
+
+			<div>
 				<x-forms.label for="form.utm_source">Campaign Source</x-forms.label>
 				<x-forms.text-input type="text" wire:model="form.utm_source" id="form.utm_source" class="w-full" placeholder="Campaign Source" />
+				<div class="mt-2 text-sm text-gray-600">The Campaign Source value should be either 'salesforce' or the name of the social media service.</div>
 				@error('form.utm_source') <span class="text-red-600 font-semibold mt-2">{{ $message }}</span> @enderror
 			</div>
 
 			<div>
 				<x-forms.label for="form.utm_medium">Campaign Medium</x-forms.label>
 				<x-forms.text-input type="text" wire:model="form.utm_medium" id="form.utm_medium" class="w-full" placeholder="Campaign Medium" />
+				<div class="mt-2 text-sm text-gray-600">The Campaign Medium should be 'email' or 'text' if coming from Salesforce or the account username if coming from social media.</div>
 				@error('form.utm_medium') <span class="text-red-600 font-semibold mt-2">{{ $message }}</span> @enderror
-			</div>
-
-			<div>
-				<x-forms.label for="form.utm_campaign">Campaign Name</x-forms.label>
-				<x-forms.text-input type="text" wire:model="form.utm_campaign" id="form.utm_campaign" class="w-full" placeholder="Campaign Name" />
-				@error('form.utm_campaign') <span class="text-red-600 font-semibold mt-2">{{ $message }}</span> @enderror
 			</div>
 		</div>
 

@@ -10,17 +10,18 @@
 		</div>
 	@endif --}}
 
-    <form class="accent-green" wire:submit.prevent="store">
+    <form wire:submit.prevent="store">
 		<div class="bg-gray-100 border border-gray-200 rounded px-4 py-4">
 			You can shorten any marshall.edu, jcesom.marshall.edu, formarshallu.org, or Dynamic Forms URL.
 		</div>
+
 		<div class="mt-8 pt-8">
-			<x-forms.label for="form.base_url">Enter the url that you want to shorten</x-forms.label>
+			<x-forms.label for="form.base_url">Enter your url</x-forms.label>
 			<x-forms.text-input type="url" wire:model="form.base_url" id="form.base_url" class="w-full" placeholder="https://www.marshall.edu" required />
 			@error('form.base_url') <span class="text-red-600 font-semibold mt-2">{{ $message }}</span> @enderror
 		</div>
 
-		<div class="flex flex-col gap-8 mt-8 pt-8">
+		<div class="border-t border-gray-200 flex flex-col gap-8 mt-8 pt-8">
 			<div>
 				<h2 class="font-semibold text-lg">Custom Alias</h2>
 				<div class="text-sm text-gray-600 font-semibold mt-2">For example, if you set the Custom Alias to 'admissions' the shortened URL will be https://go.marshall.edu/admissions</div>
@@ -38,21 +39,24 @@
 			<h2 class="font-semibold text-lg">Google Campaign URL Data</h2>
 
 			<div>
+				<x-forms.label for="form.utm_campaign">Campaign Name</x-forms.label>
+				<x-forms.text-input type="text" wire:model="form.utm_campaign" id="form.utm_campaign" class="w-full" placeholder="Campaign Name" />
+				<div class="mt-2 text-sm text-gray-600">The Campaign Name should be a short, but descriptive name for the reason for communication. If you plan to have multiple communications on separate days, you can include the date in MMDDYY format at the end. You should use underscores in place of spaces in this value.</div>
+				@error('form.utm_campaign') <span class="text-red-600 font-semibold mt-2">{{ $message }}</span> @enderror
+			</div>
+
+			<div>
 				<x-forms.label for="form.utm_source">Campaign Source</x-forms.label>
 				<x-forms.text-input type="text" wire:model="form.utm_source" id="form.utm_source" class="w-full" placeholder="Campaign Source" />
+				<div class="mt-2 text-sm text-gray-600">The Campaign Source value should be either 'salesforce' or the name of the social media service.</div>
 				@error('form.utm_source') <span class="text-red-600 font-semibold mt-2">{{ $message }}</span> @enderror
 			</div>
 
 			<div>
 				<x-forms.label for="form.utm_medium">Campaign Medium</x-forms.label>
 				<x-forms.text-input type="text" wire:model="form.utm_medium" id="form.utm_medium" class="w-full" placeholder="Campaign Medium" />
+				<div class="mt-2 text-sm text-gray-600">The Campaign Medium should be 'email' or 'text' if coming from Salesforce or the account username if coming from social media.</div>
 				@error('form.utm_medium') <span class="text-red-600 font-semibold mt-2">{{ $message }}</span> @enderror
-			</div>
-
-			<div>
-				<x-forms.label for="form.utm_campaign">Campaign Name</x-forms.label>
-				<x-forms.text-input type="text" wire:model="form.utm_campaign" id="form.utm_campaign" class="w-full" placeholder="Campaign Name" />
-				@error('form.utm_campaign') <span class="text-red-600 font-semibold mt-2">{{ $message }}</span> @enderror
 			</div>
 		</div>
 
