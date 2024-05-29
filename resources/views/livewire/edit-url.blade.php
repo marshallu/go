@@ -13,11 +13,33 @@
 		<h1 class="font-bold text-xl">Edit Your Short URL</h1>
 	</div>
 
-    <form class="accent-green" wire:submit.prevent="update">
-		<div class="bg-gray-100 border border-gray-200 rounded px-4 py-4">
-			You can shorten any marshall.edu, jcesom.marshall.edu, formarshallu.org, or Dynamic Forms URL.
+	<div class="flex flex-col gap-8 mt-8 pt-8"
+		x-data="{
+			showMessage: false,
+			copy() {
+				navigator.clipboard.writeText('https://go.marshall.edu/{{ $url->id }}');
+				this.showMessage = true;
+				setTimeout(() => this.showMessage = false, 1000);
+			}
+		}"
+	>
+		<h2 class="font-semibold text-lg">Current Shortened URL</h2>
+
+		<div x-on:click="copy()" class="flex cursor-pointer w-full">
+			<div class="py-2 px-4 border rounded-l border-gray-200 border-r-0 flex-1">
+				https://go.marshall.edu/{{ $url->id }}
+			</div>
+			<div class="py-2 px-4 rounded-r border border-gray-200 bg-gray-100 uppercase font-semibold text-gray-600">
+				Copy URL
+			</div>
 		</div>
 
+		<div x-show="showMessage" class="text-sm text-green-darker -mt-2">
+			URL Copied to Clipboard
+		</div>
+	</div>
+
+    <form class="accent-green" wire:submit.prevent="update">
 		<div class="mt-8 pt-8">
 			<x-forms.label for="form.long_url">The full URL of the current redirect</x-forms.label>
 			<a class="text-brown underline hover:text-brown-dark hover:no-underline" target="_blank" href="{{ $form->long_url }}">{{ $form->long_url }}</a>
@@ -33,17 +55,6 @@
 			<x-forms.label for="form.base_url">Enter the url that you want to shorten</x-forms.label>
 			<x-forms.text-input type="url" wire:model="form.base_url" id="form.base_url" class="w-full" placeholder="https://www.marshall.edu" required />
 			@error('form.base_url') <span class="text-red-600 font-semibold mt-2">{{ $message }}</span> @enderror
-		</div>
-
-		<div class="flex flex-col gap-8 mt-8 pt-8">
-			<h2 class="font-semibold text-lg">Alias</h2>
-
-			<div>
-				<x-forms.label for="form.customAlias">Custom Alias</x-forms.label>
-				<x-forms.text-input disabled type="text" wire:model.live="form.id" id="form.id" class="w-full bg-gray-50 cursor-not-allowed" placeholder="mysite" />
-				<div class="mt-2 text-sm text-gray-600">Note: The is an identifier and can not be edited. If you need to update the alias you must delete URL and recreate with new alias.</div>
-				@error('form.id') <span class="text-red-600 font-semibold mt-2">{{ $message }}</span> @enderror
-			</div>
 		</div>
 
 		<div class="border-t border-gray-200 flex flex-col gap-8 mt-8 pt-8">
