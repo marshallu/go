@@ -27,6 +27,7 @@ class UrlForm extends Form
 	public $utm_source;
 	public $utm_medium;
 	public $utm_campaign;
+	public $user;
 
 	#[Validate('nullable|max:24|unique:urls,id')]
 	public $customAlias;
@@ -45,6 +46,7 @@ class UrlForm extends Form
 	public function newUrl()
 	{
 		$this->url = new Url();
+		$this->user = cas()->user();
 	}
 
 	public function setUrl(Url $url)
@@ -99,6 +101,7 @@ class UrlForm extends Form
 		$url->utm_source = $this->utm_source;
 		$url->utm_medium = $this->utm_medium;
 		$url->utm_campaign = $this->utm_campaign;
+		$url->created_by = $this->user;
 		$url->last_redirected_at = now();
 		$url->save();
 
@@ -119,7 +122,7 @@ class UrlForm extends Form
 		$this->url->last_redirected_at = now();
 		$this->url->save();
 
-		if($this->oldLongUrl != $this->url->long_url) {
+		if ($this->oldLongUrl != $this->url->long_url) {
 			$this->createQrCode($this->url->long_url, $this->url->id);
 		}
 

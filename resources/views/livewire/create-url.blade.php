@@ -1,5 +1,5 @@
-<div>
-	{{-- @if($errors->any())
+<div class="max-w-2xl px-6 mx-auto">
+	@if($errors->any())
 		<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
 			<strong class="font-bold">Whoops! Something went wrong.</strong>
 			<ul>
@@ -8,7 +8,7 @@
 				@endforeach
 			</ul>
 		</div>
-	@endif --}}
+	@endif
 
     <form wire:submit.prevent="store">
 		<div class="bg-gray-100 border border-gray-200 rounded px-4 py-4">

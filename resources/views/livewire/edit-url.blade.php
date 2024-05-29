@@ -1,4 +1,4 @@
-<div>
+<div class="max-w-2xl px-6 mx-auto">
 	<div
 		x-cloak
 		x-show="$wire.showSuccessIndicator"
