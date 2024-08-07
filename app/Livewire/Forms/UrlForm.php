@@ -29,6 +29,8 @@ class UrlForm extends Form
 	public $utm_campaign;
 	public $user;
 
+	public $linksTo = 'short';
+
 	#[Validate('nullable|max:24|unique:urls,id')]
 	public $customAlias;
 
@@ -105,7 +107,11 @@ class UrlForm extends Form
 		$url->last_redirected_at = now();
 		$url->save();
 
-		$this->createQrCode(env('APP_URL') . '/' . $url->id, $url->id);
+		if ($this->linksTo == 'short') {
+			$this->createQrCode(env('APP_URL') . '/' . $url->id, $url->id);
+		} else {
+			$this->createQrCode($url->long_url, $url->id);
+		}
 
 		return redirect()->route('url.edit', $url);
 	}

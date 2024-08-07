@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Route;
 use Subfission\Cas\Middleware\CASAuth;
 
 Route::get('/', CreateUrl::class)->name('url.create')->middleware(CASAuth::class);
+
 Route::get('/{url}/edit', EditUrl::class)->name('url.edit')->middleware([CASAuth::class, CreatedByCanEditUrl::class]);
 
 Route::get('/urls', UrlsIndex::class)->name('url.create')->middleware([CASAuth::class, IsAdmin::class]);

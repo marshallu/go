@@ -21,6 +21,15 @@
 			@error('form.base_url') <span class="text-red-600 font-semibold mt-2">{{ $message }}</span> @enderror
 		</div>
 
+		<div class="mt-4 pt-8">
+			<x-forms.label for="form.linksTo">QR Code Links To</x-forms.label>
+			<select wire:model="form.linksTo" class="form-select rounded mt-1 w-full focus:ring-green focus:border-green">
+				<option value="short">Shortened URL</option>
+				<option value="full">The Full URL</option>
+			</select>
+			@error('form.linksTo') <span class="text-red-600 font-semibold mt-2">{{ $message }}</span> @enderror
+		</div>
+
 		<div class="border-t border-gray-200 flex flex-col gap-8 mt-8 pt-8">
 			<div>
 				<h2 class="font-semibold text-lg">Custom Alias</h2>

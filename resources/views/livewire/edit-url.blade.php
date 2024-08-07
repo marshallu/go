@@ -17,7 +17,7 @@
 		x-data="{
 			showMessage: false,
 			copy() {
-				navigator.clipboard.writeText('https://go.marshall.edu/{{ $url->id }}');
+				navigator.clipboard.writeText('{{ env('APP_URL') }}/{{ $url->id }}');
 				this.showMessage = true;
 				setTimeout(() => this.showMessage = false, 1000);
 			}
@@ -27,7 +27,7 @@
 
 		<div x-on:click="copy()" class="flex cursor-pointer w-full">
 			<div class="py-2 px-4 border rounded-l border-gray-200 border-r-0 flex-1">
-				https://go.marshall.edu/{{ $url->id }}
+				{{ env('APP_URL') }}/{{ $url->id }}
 			</div>
 			<div class="py-2 px-4 rounded-r border border-gray-200 bg-gray-100 uppercase font-semibold text-gray-600">
 				Copy URL
