@@ -30,6 +30,15 @@
 			@error('form.linksTo') <span class="text-red-600 font-semibold mt-2">{{ $message }}</span> @enderror
 		</div>
 
+		<div class="mt-4 pt-8">
+			<x-forms.label for="form.foreground_color">Foreground Color</x-forms.label>
+			<select wire:model="form.foreground_color" class="form-select rounded mt-1 w-full focus:ring-green focus:border-green">
+				<option value="green">Green</option>
+				<option value="black">Black</option>
+			</select>
+			@error('form.foreground_color') <span class="text-red-600 font-semibold mt-2">{{ $message }}</span> @enderror
+		</div>
+
 		<div class="border-t border-gray-200 flex flex-col gap-8 mt-8 pt-8">
 			<div>
 				<h2 class="font-semibold text-lg">Custom Alias</h2>
