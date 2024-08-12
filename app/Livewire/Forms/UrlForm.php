@@ -28,6 +28,7 @@ class UrlForm extends Form
 	public $utm_medium;
 	public $utm_campaign;
 	public $user;
+	public $foreground_color = 'green';
 
 	public $linksTo = 'short';
 
@@ -42,6 +43,7 @@ class UrlForm extends Form
 			'utm_medium' => 'nullable|alpha_num|max:50',
 			'utm_campaign' => 'nullable|alpha_num|max:50',
 			'customAlias' => 'nullable|max:24|unique:urls,id',
+			'foreground_color' => 'nullable',
 		];
 	}
 
@@ -108,9 +110,9 @@ class UrlForm extends Form
 		$url->save();
 
 		if ($this->linksTo == 'short') {
-			$this->createQrCode(env('APP_URL') . '/' . $url->id, $url->id);
+			$this->createQrCode(env('APP_URL') . '/' . $url->id, $url->id, $this->foreground_color);
 		} else {
-			$this->createQrCode($url->long_url, $url->id);
+			$this->createQrCode($url->long_url, $url->id, $this->foreground_color);
 		}
 
 		return redirect()->route('url.edit', $url);
@@ -129,13 +131,13 @@ class UrlForm extends Form
 		$this->url->save();
 
 		if ($this->oldLongUrl != $this->url->long_url) {
-			$this->createQrCode($this->url->long_url, $this->url->id);
+			$this->createQrCode($this->url->long_url, $this->url->id, $this->foreground_color);
 		}
 
 		return redirect()->route('url.edit', $this->url);
 	}
 
-	public function createQrCode($url, $id)
+	public function createQrCode($url, $id, $foreground_color)
 	{
 		// Check if QR code exists, if so remove it.
 		$current_qr_code_file = storage_path('/public/qr_codes/' . $id . '.svg');
@@ -146,6 +148,12 @@ class UrlForm extends Form
 
 		$writer = new SvgWriter();
 
+		if ($foreground_color === 'green') {
+			$foreground_color = new Color(0, 177, 64);
+		} else {
+			$foreground_color = new Color(0, 0, 0);
+		}
+
 		// Create QR code
 		$qrCode = QrCode::create($url)
 			->setEncoding(new Encoding('ISO-8859-1'))
@@ -153,7 +161,7 @@ class UrlForm extends Form
 			->setSize(1080)
 			->setMargin(36)
 			->setRoundBlockSizeMode(RoundBlockSizeMode::Margin)
-			->setForegroundColor(new Color(0, 177, 64))
+			->setForegroundColor($foreground_color)
 			->setBackgroundColor(new Color(255, 255, 255));
 
 
