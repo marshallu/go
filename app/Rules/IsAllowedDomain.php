@@ -14,7 +14,7 @@ class IsAllowedDomain implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-		$allowedDomains = ['www.marshall.edu', 'jcesom.marshall.edu', 'www.herdzone.com', 'www.formarshallu.org', 'dynamicforms.ngwebsolutions.com', 'livemarshall.sharepoint.com'];
+		$allowedDomains = ['www.marshall.edu', 'jcesom.marshall.edu', 'www.herdzone.com', 'www.formarshallu.org', 'dynamicforms.ngwebsolutions.com', 'federation.ngwebsolutions.com', 'livemarshall.sharepoint.com'];
 
 		$url = parse_url($value);
 
