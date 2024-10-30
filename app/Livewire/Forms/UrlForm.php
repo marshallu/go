@@ -99,7 +99,11 @@ class UrlForm extends Form
 		$this->validate();
 
 		$url = new Url();
-		$url->id = $this->getId();
+		if ( $this->customAlias ) {
+			$url->id = $this->customAlias;
+		} else {
+			$url->id = $this->getId();
+		}
 		$url->long_url = $this->getUrl();
 		$url->base_url = $this->base_url;
 		$url->utm_source = $this->utm_source;
