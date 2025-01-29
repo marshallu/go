@@ -12,7 +12,7 @@
 
     <form wire:submit.prevent="store">
 		<div class="bg-gray-100 border border-gray-200 rounded px-4 py-4">
-			You can shorten any marshall.edu, jcesom.marshall.edu, formarshallu.org, or Dynamic Forms URL.
+			You can shorten any marshall.edu, jcesom.marshall.edu, formarshallu.org, marshallhealth.org or Dynamic Forms URL.
 		</div>
 
 		<div class="mt-8 pt-8">
