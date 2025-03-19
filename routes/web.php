@@ -1,21 +1,15 @@
 <?php
 
-use App\Http\Middleware\CreatedByCanEditUrl;
-use App\Http\Middleware\IsAdmin;
 use App\Models\Url;
 use App\Models\User;
-use App\Livewire\EditUrl;
-use App\Livewire\CreateUrl;
-use App\Livewire\UrlsIndex;
+use Livewire\Volt\Volt;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Route;
 use Laravel\Socialite\Facades\Socialite;
-use Illuminate\Support\Str;
 
-Route::get('/', CreateUrl::class)->name('url.create')->middleware('auth');
-
-Route::get('/{url}/edit', EditUrl::class)->name('url.edit')->middleware('auth');
-
-Route::get('/urls', UrlsIndex::class)->name('url.create')->middleware('auth');
+Volt::route('/', 'urls.create')->name('urls.create')->middleware('auth');
+Volt::route('/{url}/edit', 'urls.edit')->name('urls.edit')->middleware('auth');
+Volt::route('/urls', 'urls.index')->name('urls.index')->middleware('auth');
 
 Route::get('/login', function () {
     return redirect('/auth/redirect');

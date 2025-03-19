@@ -1,3 +1,35 @@
+<?php
+
+use App\Models\Url;
+use Livewire\Volt\Component;
+use App\Livewire\Forms\UrlForm;
+use Illuminate\Support\Facades\Gate;
+
+new class extends Component {
+	public Url $url;
+    public UrlForm $form;
+
+	public function mount(Url $url)
+    {
+		if (!Gate::allows('edit-url', $this->url)) {
+            abort(403, 'Unauthorized access.');
+        }
+
+		$this->url = $url;
+
+        $this->form->setUrl($url);
+    }
+
+    public function update() {
+        $this->form->update();
+
+        Flux::toast(
+            heading: 'Changes saved.',
+            text: 'The changes to this URL have been saved.',
+        );
+    }
+}; ?>
+
 <div class="max-w-2xl px-6 mx-auto">
 	<flux:breadcrumbs>
 		<flux:breadcrumbs.item href="/">Home</flux:breadcrumbs.item>

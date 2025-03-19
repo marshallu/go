@@ -1,3 +1,27 @@
+<?php
+
+use App\Livewire\Forms\UrlForm;
+use Livewire\Volt\Component;
+
+new class extends Component {
+    public UrlForm $form;
+
+	public function mount()
+    {
+        $this->form->newUrl();
+    }
+
+    public function store()
+    {
+        $this->form->store();
+
+        Flux::toast(
+            heading: 'Shortened URL created.',
+            text: 'The shortened URL has been created.',
+        );
+    }
+}; ?>
+
 <div class="max-w-2xl px-6 mx-auto">
 	@if($errors->any())
 		<flux:callout variant="danger">
