@@ -47,7 +47,7 @@ class FixUrlUsers extends Command
             ]);
 
             $url->user_id = $user->id;
-            // $url->save();
+            $url->save();
         }
     }
 }
