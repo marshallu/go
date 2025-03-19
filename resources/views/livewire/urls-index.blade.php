@@ -10,7 +10,7 @@
 		</flux:select>
 	</form>
 
-	<flux:table :paginate="$urls">
+	<flux:table :paginate="$urls" class="mt-8">
 		<flux:table.columns>
 			<flux:table.column>Short URL</flux:table.column>
 			<flux:table.column>Full URL</flux:table.column>

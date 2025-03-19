@@ -42,7 +42,7 @@ class FixUrlUsers extends Command
             $user = User::firstOrCreate([
                 'email' => $combinedEmail,
             ], [
-                'name' => $url->created_by,
+                'name' => $url->created_by ?? 'Unknown',
                 'password' => bcrypt(Str::random(24)),
             ]);
 
