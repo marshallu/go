@@ -7,7 +7,6 @@ use Livewire\WithPagination;
 use Livewire\WithoutUrlPagination;
 use Illuminate\Support\Facades\Gate;
 
-
 new class extends Component {
 	use WithPagination, WithoutUrlPagination;
 
