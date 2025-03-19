@@ -37,7 +37,7 @@ class FixLongUrls extends Command
                 $fixedUrl = $parts[0] . '?' . str_replace('?', '&', $parts[1]); // Replace only the second "?" with "&"
 
                 $url->long_url = $fixedUrl;
-                // $url->save();
+                $url->save();
 
                 $this->info("Fixed URL: $fixedUrl");
                 $fixedCount++;
