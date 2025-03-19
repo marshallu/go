@@ -50,7 +50,7 @@ class UrlForm extends Form
     public function newUrl()
     {
         $this->url = new Url();
-        $this->user = cas()->user();
+        $this->user = auth()->user();
     }
 
     public function setUrl(Url $url)

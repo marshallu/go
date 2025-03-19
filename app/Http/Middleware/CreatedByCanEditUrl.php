@@ -15,13 +15,13 @@ class CreatedByCanEditUrl
      */
     public function handle(Request $request, Closure $next): Response
     {
-		$admins = ['bajus', 'davis220', 'traube3', 'madden24', 'cmccomas'];
+		$admins = ['bajus@marshall.edu', 'davis220@marshall.edu', 'traube3@marshall.edu', 'madden24@marshall.edu', 'cmccomas@marshall.edu'];
 
-		if (in_array(cas()->user(), $admins)) {
+		if (in_array(auth()->user(), $admins)) {
 			return $next($request);
 		}
 
-		if (cas()->user() !== $request->url->created_by) {
+		if (auth()->user() !== $request->url->created_by) {
 			abort(403);
 		}
 

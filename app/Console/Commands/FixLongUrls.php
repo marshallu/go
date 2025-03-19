@@ -12,7 +12,7 @@ class FixLongUrls extends Command
      *
      * @var string
      */
-    protected $signature = 'fix:long-urls';
+    protected $signature = 'go:fix-urls';
 
     /**
      * The console command description.

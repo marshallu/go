@@ -15,12 +15,12 @@ class IsAdmin
      */
     public function handle(Request $request, Closure $next): Response
     {
-		$admins = ['bajus', 'davis220', 'traube3', 'madden24', 'cmccomas'];
+        $admins = ['bajus@marshall.edu', 'davis220@marshall.edu', 'traube3@marshall.edu', 'madden24@marshall.edu', 'cmccomas@marshall.edu'];
 
-		if (!in_array(cas()->user(), $admins)) {
-			abort(403);
-		}
+        if (!in_array(auth()->user(), $admins)) {
+            abort(403);
+        }
 
-		return $next($request);
+        return $next($request);
     }
 }

@@ -9,7 +9,7 @@ class Url extends Model
 {
     use HasFactory;
 
-	protected $fillable = ['id', 'long_url', 'created_by', 'redirect_count', 'last_redirected_at'];
+	protected $guarded = [];
 
 	protected $keyType = 'string';
 	public $incrementing = false;
