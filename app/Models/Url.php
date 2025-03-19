@@ -9,10 +9,15 @@ class Url extends Model
 {
     use HasFactory;
 
-	protected $guarded = [];
+    protected $guarded = [];
 
-	protected $keyType = 'string';
-	public $incrementing = false;
+    protected $keyType = 'string';
+    public $incrementing = false;
 
-	public $possibleCharacters = 'abcdefghijkmnopqrstuvwxyz234567890';
+    public $possibleCharacters = 'abcdefghijkmnopqrstuvwxyz234567890';
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

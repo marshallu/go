@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use App\Livewire\Forms\UrlForm;
 use Livewire\Component;
+use Flux\Flux;
 
 class CreateUrl extends Component
 {
@@ -15,6 +16,11 @@ class CreateUrl extends Component
 
 	public function store() {
 		$this->form->store();
+
+		Flux::toast(
+            heading: 'Shortened URL created.',
+            text: 'The shortened URL has been created.',
+        );
 	}
 
     public function render()

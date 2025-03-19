@@ -13,10 +13,9 @@ use Illuminate\Support\Str;
 
 Route::get('/', CreateUrl::class)->name('url.create')->middleware('auth');
 
-Route::get('/{url}/edit', EditUrl::class)->name('url.edit')->middleware(['auth', CreatedByCanEditUrl::class]);
+Route::get('/{url}/edit', EditUrl::class)->name('url.edit')->middleware('auth');
 
-Route::get('/urls', UrlsIndex::class)->name('url.create')->middleware(['auth', IsAdmin::class]);
-
+Route::get('/urls', UrlsIndex::class)->name('url.create')->middleware('auth');
 
 Route::get('/login', function () {
     return redirect('/auth/redirect');

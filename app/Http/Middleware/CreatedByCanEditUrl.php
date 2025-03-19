@@ -17,7 +17,7 @@ class CreatedByCanEditUrl
     {
 		$admins = ['bajus@marshall.edu', 'davis220@marshall.edu', 'traube3@marshall.edu', 'madden24@marshall.edu', 'cmccomas@marshall.edu'];
 
-		if (in_array(auth()->user(), $admins)) {
+		if (in_array(auth()->user()->email, $admins)) {
 			return $next($request);
 		}
 

@@ -44,4 +44,12 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    /**
+     * Get the URLs for the user.
+     */
+    public function urls()
+    {
+        return $this->hasMany(Url::class);
+    }
 }

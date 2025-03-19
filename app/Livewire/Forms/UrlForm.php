@@ -118,7 +118,7 @@ class UrlForm extends Form
         $url->utm_source = $this->utm_source;
         $url->utm_medium = $this->utm_medium;
         $url->utm_campaign = $this->utm_campaign;
-        $url->created_by = $this->user;
+        $url->user_id = auth()->user()->id;
         $url->last_redirected_at = now();
         $url->save();
 
@@ -149,8 +149,6 @@ class UrlForm extends Form
         if ($this->oldLongUrl != $this->url->long_url) {
             $this->createQrCode($this->url->long_url, $this->url->id, $this->foreground_color);
         }
-
-        return redirect()->route('url.edit', $this->url);
     }
 
     public function createQrCode($url, $id, $foreground_color)
