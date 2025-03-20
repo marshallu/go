@@ -16,27 +16,20 @@ class DeployController extends Controller
         // }
 
         try {
-            // We use sudo to run the script as the "dks" user.
-            // Ensure that the web server user (e.g., nginx) is allowed via sudoers
-            $process = new Process(['sudo', '-u', 'dks', '/home/dks/deploy-go.marshall.edu.sh']);
-            $process->setTimeout(300); // 5 minutes
-            $process->run();
-
-            if (!$process->isSuccessful()) {
-                throw new ProcessFailedException($process);
-            }
-
-            $output = $process->getOutput();
+            // Run the deployment script in the background
+            $process = new Process(['/bin/bash', '/home/dks/deploy-go.marshall.edu.sh']);
+            $process->setTimeout(0); // Set no timeout
+            $process->disableOutput(); // Don't hold up PHP
+            $process->start(); // Run in background
 
             return response()->json([
                 'status' => 'success',
-                'output' => $output,
+                'message' => 'Deployment started.',
             ]);
-
-        } catch (ProcessFailedException $e) {
+        } catch (\Exception $e) {
             return response()->json([
-                'status' => 'failed',
-                'error'  => $e->getMessage(),
+                'status' => 'error',
+                'message' => $e->getMessage(),
             ], 500);
         }
     }
