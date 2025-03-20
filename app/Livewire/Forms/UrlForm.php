@@ -131,7 +131,7 @@ class UrlForm extends Form
             $this->createQrCode($url->long_url, $url->id, $this->foreground_color);
         }
 
-        return redirect()->route('url.edit', $url);
+        return redirect()->route('urls.edit', $url);
     }
 
     public function update()
