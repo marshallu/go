@@ -22,11 +22,6 @@ Route::get('/{url}', function(Url $url) {
     return redirect($url->long_url);
 })->name('site.redirect');
 
-Route::get('/debug', function () {
-    dd(config('services.azure'));
-});
-
-
 Route::get('/auth/redirect', function () {
     return Socialite::driver('azure')->redirect();
 });
