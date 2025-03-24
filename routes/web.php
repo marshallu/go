@@ -12,10 +12,6 @@ Volt::route('/', 'urls.create')->name('urls.create')->middleware('auth');
 Volt::route('/{url}/edit', 'urls.edit')->name('urls.edit')->middleware('auth');
 Volt::route('/urls', 'urls.index')->name('urls.index')->middleware('auth');
 
-Route::get('/cmm', function () {
-	return 'hi';
-});
-
 Route::get('/login', function () {
     return redirect('/auth/redirect');
 })->name('login');
@@ -25,6 +21,10 @@ Route::get('/{url}', function(Url $url) {
     $url->update(['last_redirected_at' => now()]);
     return redirect($url->long_url);
 })->name('site.redirect');
+
+Route::get('/debug', function () {
+    dd(config('services.azure'));
+});
 
 
 Route::get('/auth/redirect', function () {
