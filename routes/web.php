@@ -12,7 +12,9 @@ Volt::route('/', 'urls.create')->name('urls.create')->middleware('auth');
 Volt::route('/{url}/edit', 'urls.edit')->name('urls.edit')->middleware('auth');
 Volt::route('/urls', 'urls.index')->name('urls.index')->middleware('auth');
 
-Route::post('/deploy', [DeployController::class, 'deploy'])->name('deploy');
+Route::get('/cmm', function () {
+	return 'hi';
+});
 
 Route::get('/login', function () {
     return redirect('/auth/redirect');
