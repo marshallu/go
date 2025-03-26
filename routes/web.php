@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\DeployController;
 use App\Models\Url;
 use App\Models\User;
 use Livewire\Volt\Volt;
@@ -11,7 +10,6 @@ use Laravel\Socialite\Facades\Socialite;
 Volt::route('/', 'urls.create')->name('urls.create')->middleware('auth');
 Volt::route('/{url}/edit', 'urls.edit')->name('urls.edit')->middleware('auth');
 Volt::route('/urls', 'urls.index')->name('urls.index')->middleware('auth');
-
 
 Route::get('/login', function () {
     return redirect('/auth/redirect');
