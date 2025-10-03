@@ -1,0 +1,8 @@
+production:
+  root_domain: go.biggreen.cloud
+  repo: marshallu/go
+  branch: main
+  php_version: '8.3'
+  project_type: laravel
+  server: marshall
+  operating_system: oracle

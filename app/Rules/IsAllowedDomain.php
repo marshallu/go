@@ -24,7 +24,8 @@ class IsAllowedDomain implements ValidationRule
             'livemarshall.sharepoint.com',
             'www.youtube.com',
             'youtube.com',
-            'www.marshallhealth.org'
+            'www.marshallhealth.org',
+            'auth.marshall.edu',
         ];
 
         $url = parse_url($value);
