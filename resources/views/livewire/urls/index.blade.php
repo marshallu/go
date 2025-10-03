@@ -79,6 +79,7 @@ new class extends Component {
 			<flux:table.column>Created By</flux:table.column>
 			<flux:table.column sortable :sorted="$sortBy === 'created_at'" :direction="$sortDirection" wire:click="sort('created_at')">Created Date</flux:table.column>
 			<flux:table.column sortable :sorted="$sortBy === 'last_redirected_at'" :direction="$sortDirection" wire:click="sort('last_redirected_at')">Last Used</flux:table.column>
+			<flux:table.column>Redirects</flux:table.column>
 			<flux:table.column>Edit</flux:table.column>
 		</flux:table.columns>
 		@forelse($this->urls as $url)
@@ -96,6 +97,7 @@ new class extends Component {
 				<flux:table.cell>{{ $url->user->email ?? '' }}</flux:table.cell>
 				<flux:table.cell>{{ Carbon\Carbon::create($url->created_at)->format('M d, Y') }}</flux:table.cell>
 				<flux:table.cell>{{ Carbon\Carbon::create($url->last_redirected_at)->diffForHumans() }}</flux:table.cell>
+				<flux:table.cell>{{  $url->redirect_count }}</flux:table.cell>
 				<flux:table.cell>
 					<flux:button icon="pencil-square" variant="ghost" href="{{ route('urls.edit', $url) }}" />
 				</flux:table.cell>
