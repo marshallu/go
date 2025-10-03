@@ -6,14 +6,15 @@ use Livewire\Volt\Component;
 use Livewire\WithPagination;
 use Livewire\WithoutUrlPagination;
 use Illuminate\Support\Facades\Gate;
-
-
+use Livewire\Attributes\Computed;
 
 new class extends Component {
 	use WithPagination, WithoutUrlPagination;
 
 	public $search = '';
     public $userSearch = false;
+	public $sortBy = 'created_at';
+    public $sortDirection = 'desc';
 
 	public function updated()
     {
@@ -32,20 +33,28 @@ new class extends Component {
         Url::find($id)->delete();
     }
 
+	 public function sort($column) {
+        if ($this->sortBy === $column) {
+            $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
+        } else {
+            $this->sortBy = $column;
+            $this->sortDirection = 'asc';
+        }
+    }
+
+	#[Computed]
+	public function urls()
+	{
+		return Url::query()
+			->when($this->search, fn($query) => $query->where('long_url', 'like', '%' . $this->search . '%'))
+			->when($this->userSearch, fn($query) => $query->where('user_id', $this->userSearch))
+			->tap(fn($query) => $this->sortBy ? $query->orderBy($this->sortBy, $this->sortDirection) : $query)
+			->paginate(25);
+	}
+
 	public function with(): array
     {
-		$urls = Url::query();
-
-		if ($this->search) {
-			$urls->where('long_url', 'like', '%' . $this->search . '%');
-		}
-
-		if ($this->userSearch) {
-			$urls->where('user_id', $this->userSearch);
-		}
-
         return [
-            'urls' => $urls->orderby('created_at', 'desc')->paginate(25),
             'users' => User::orderBy('email', 'asc')->get(),
         ];
     }
@@ -63,16 +72,16 @@ new class extends Component {
 		</flux:select>
 	</form>
 
-	<flux:table :paginate="$urls" class="mt-8">
+	<flux:table :paginate="$this->urls" class="mt-8">
 		<flux:table.columns>
 			<flux:table.column>Short URL</flux:table.column>
 			<flux:table.column>Full URL</flux:table.column>
 			<flux:table.column>Created By</flux:table.column>
-			<flux:table.column>Created Date</flux:table.column>
-			<flux:table.column>Last Used</flux:table.column>
+			<flux:table.column sortable :sorted="$sortBy === 'created_at'" :direction="$sortDirection" wire:click="sort('created_at')">Created Date</flux:table.column>
+			<flux:table.column sortable :sorted="$sortBy === 'last_redirected_at'" :direction="$sortDirection" wire:click="sort('last_redirected_at')">Last Used</flux:table.column>
 			<flux:table.column>Edit</flux:table.column>
 		</flux:table.columns>
-		@forelse($urls as $url)
+		@forelse($this->urls as $url)
 			<flux:table.row>
 				<flux:table.cell>{{ $url->id }}</flux:table.cell>
 				<flux:table.cell class="">

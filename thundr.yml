@@ -1,5 +1,5 @@
 production:
-  root_domain: go.biggreen.cloud
+  root_domain: go.marshall.edu
   repo: marshallu/go
   branch: main
   php_version: '8.3'
