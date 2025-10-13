@@ -180,7 +180,6 @@ class UrlForm extends Form
             ->setForegroundColor($foreground_color)
             ->setBackgroundColor(new Color(255, 255, 255));
 
-
             // Create generic logo
             $qrLogo = Logo::create(storage_path('icons/m_primary.svg'))
                 ->setResizeToWidth(500)
