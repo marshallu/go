@@ -123,8 +123,10 @@ class UrlForm extends Form
         $url->save();
 
         if ($this->linksTo == 'short') {
+            // Changed this line to use the full URL
             $this->createQrCode(
-                env('APP_URL') . '/' . $url->id, $url->id,
+                'https://go.marshall.edu/' . $url->id,
+                $url->id,
                 $this->foreground_color
             );
         } else {
