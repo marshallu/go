@@ -155,6 +155,12 @@ class UrlForm extends Form
 
     public function createQrCode($url, $id, $foreground_color)
     {
+            \Log::info('createQrCode called', [
+                'url_parameter' => $url,
+                'id_parameter' => $id,
+                'foreground_color' => $foreground_color
+            ]);
+
         // Check if QR code exists, if so remove it.
         $current_qr_code_file = storage_path('/public/qr_codes/' . $id . '.svg');
 
@@ -169,6 +175,8 @@ class UrlForm extends Form
         } else {
             $foreground_color = new Color(0, 0, 0);
         }
+
+        \Log::info('About to create QR code with URL: ' . $url);
 
         // Create QR code
         $qrCode = QrCode::create($url)
