@@ -20,7 +20,7 @@ class SendSlackNotificationOnLogin
                    "⏰ *Time:* {$timestamp}\n".
                    "🔍 *IP Address:* " . request()->ip();
 
-        Http::post(env('SLACK_WEBHOOK_URL'), [
+        Http::post(config('services.slack.webhook_url'), [
             'text' => $message,
             'mrkdwn' => true, // Enables Slack markdown formatting
         ]);
