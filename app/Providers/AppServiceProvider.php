@@ -6,6 +6,8 @@ use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 use App\Models\Url;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Http\Middleware\TrustProxies;
+use Illuminate\Http\Request;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -35,5 +37,15 @@ class AppServiceProvider extends ServiceProvider
         Gate::define('super-admin', function ($user) use ($admins) {
             return in_array($user->email, $admins);
         });
+
+		TrustProxies::at('*'); // or an array of IPs/CIDRs
+		TrustProxies::withHeaders(
+			Request::HEADER_X_FORWARDED_FOR
+			| Request::HEADER_X_FORWARDED_HOST
+			| Request::HEADER_X_FORWARDED_PORT
+			| Request::HEADER_X_FORWARDED_PROTO
+			| Request::HEADER_X_FORWARDED_PREFIX
+			| Request::HEADER_X_FORWARDED_AWS_ELB
+		);
     }
 }
