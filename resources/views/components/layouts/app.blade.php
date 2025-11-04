@@ -11,7 +11,7 @@
 </head>
 <body class="font-sans bg-zinc-50 antialiased dark:bg-zinc-800">
 	<div class="max-w-2xl px-6 mx-auto py-8">
-		<flux:heading size="xl" :accent=true>GoMarshall (*)</flux:heading>
+		<flux:heading size="xl" :accent=true>GoMarshall</flux:heading>
 		<flux:subheading>Create shortened URLs and QR codes for Marshall University.</flux:subheading>
 	</div>
 
