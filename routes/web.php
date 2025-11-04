@@ -15,12 +15,6 @@ Route::get('/login', function () {
     return redirect('/auth/redirect');
 })->name('login');
 
-Route::get('/{url}', function(Url $url) {
-    $url->increment('redirect_count');
-    $url->update(['last_redirected_at' => now()]);
-    return redirect($url->long_url);
-})->name('site.redirect');
-
 Route::get('/auth/redirect', function () {
     return Socialite::driver('azure')->redirect();
 });
@@ -37,3 +31,9 @@ Route::get('/auth/callback', function () {
 
     return redirect('/');
 });
+
+Route::get('/{url}', function(Url $url) {
+    $url->increment('redirect_count');
+    $url->update(['last_redirected_at' => now()]);
+    return redirect($url->long_url);
+})->name('site.redirect');
