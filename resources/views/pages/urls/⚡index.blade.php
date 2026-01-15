@@ -2,14 +2,15 @@
 
 use App\Models\Url;
 use App\Models\User;
-use Livewire\Volt\Component;
+use Livewire\Component;
 use Livewire\WithPagination;
 use Livewire\WithoutUrlPagination;
 use Illuminate\Support\Facades\Gate;
 use Livewire\Attributes\Computed;
 
-new class extends Component {
-	use WithPagination, WithoutUrlPagination;
+new class extends Component
+{
+    use WithPagination, WithoutUrlPagination;
 
 	public $search = '';
     public $userSearch = false;
@@ -58,7 +59,8 @@ new class extends Component {
             'users' => User::orderBy('email', 'asc')->get(),
         ];
     }
-}; ?>
+};
+?>
 
 <div class="container mx-auto">
 	<form class="grid lg:grid-cols-2 gap-12">

@@ -1,9 +1,13 @@
 <?php
 
 use App\Livewire\Forms\UrlForm;
-use Livewire\Volt\Component;
+use Livewire\Attributes\Title;
+use Livewire\Component;
 
-new class extends Component {
+new
+#[Title('Create Shortened URL')]
+class extends Component
+{
     public UrlForm $form;
 
 	public function mount()
@@ -20,7 +24,8 @@ new class extends Component {
             text: 'The shortened URL has been created.',
         );
     }
-}; ?>
+};
+?>
 
 <div class="max-w-2xl px-6 mx-auto">
 	@if($errors->any())

@@ -1,12 +1,16 @@
 <?php
 
 use App\Models\Url;
-use Livewire\Volt\Component;
+use Livewire\Component;
 use App\Livewire\Forms\UrlForm;
+use Livewire\Attributes\Title;
 use Illuminate\Support\Facades\Gate;
 
-new class extends Component {
-	public Url $url;
+new
+#[Title('Edit URL')]
+class extends Component
+{
+    public Url $url;
     public UrlForm $form;
 
 	public function mount(Url $url)
@@ -28,7 +32,8 @@ new class extends Component {
             text: 'The changes to this URL have been saved.',
         );
     }
-}; ?>
+};
+?>
 
 <div class="max-w-2xl px-6 mx-auto">
 	<flux:breadcrumbs>

@@ -2,14 +2,13 @@
 
 use App\Models\Url;
 use App\Models\User;
-use Livewire\Volt\Volt;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Route;
 use Laravel\Socialite\Facades\Socialite;
 
-Volt::route('/', 'urls.create')->name('urls.create')->middleware('auth');
-Volt::route('/{url}/edit', 'urls.edit')->name('urls.edit')->middleware('auth');
-Volt::route('/urls', 'urls.index')->name('urls.index')->middleware('auth');
+Route::livewire('/', 'pages::urls.create')->name('urls.create')->middleware('auth');
+Route::livewire('/{url}/edit', 'pages::urls.edit')->name('urls.edit')->middleware('auth');
+Route::livewire('/urls', 'pages::urls.index')->name('urls.index')->middleware('auth');
 
 Route::get('/login', function () {
     return redirect('/auth/redirect');
