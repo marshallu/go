@@ -18,7 +18,7 @@ class SendSlackNotificationOnLogin
         $message = "*New Login Detected*\n".
                    "👤 *User:* {$user->name} ({$user->email})\n".
                    "⏰ *Time:* {$timestamp}\n".
-                   "🔍 *IP Address:* " . request()->ip();
+                   '🔍 *IP Address:* '.request()->ip();
 
         Http::post(config('services.slack.webhook_url'), [
             'text' => $message,

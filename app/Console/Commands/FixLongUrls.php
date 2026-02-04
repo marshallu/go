@@ -2,8 +2,8 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
 use App\Models\Url;
+use Illuminate\Console\Command;
 
 class FixLongUrls extends Command
 {
@@ -34,7 +34,7 @@ class FixLongUrls extends Command
             $parts = explode('?', $longUrl, 2); // Split at the first "?"
 
             if (count($parts) === 2) {
-                $fixedUrl = $parts[0] . '?' . str_replace('?', '&', $parts[1]); // Replace only the second "?" with "&"
+                $fixedUrl = $parts[0].'?'.str_replace('?', '&', $parts[1]); // Replace only the second "?" with "&"
 
                 $url->long_url = $fixedUrl;
                 $url->save();

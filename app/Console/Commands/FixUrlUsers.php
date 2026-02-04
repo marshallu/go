@@ -3,9 +3,9 @@
 namespace App\Console\Commands;
 
 use App\Models\Url;
+use App\Models\User;
 use Illuminate\Console\Command;
 use Illuminate\Support\Str;
-use App\Models\User;
 
 class FixUrlUsers extends Command
 {
@@ -36,7 +36,7 @@ class FixUrlUsers extends Command
             if (empty($url->created_by)) {
                 $combinedEmail = 'cnmccomas@marshall.edu';
             } else {
-                $combinedEmail = $url->created_by . '@marshall.edu';
+                $combinedEmail = $url->created_by.'@marshall.edu';
             }
 
             $user = User::firstOrCreate([

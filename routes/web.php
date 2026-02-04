@@ -2,8 +2,8 @@
 
 use App\Models\Url;
 use App\Models\User;
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
 
 Route::livewire('/', 'pages::urls.create')->name('urls.create')->middleware('auth');
@@ -21,7 +21,7 @@ Route::get('/auth/redirect', function () {
 Route::get('/auth/callback', function () {
     $azureUser = Socialite::driver('azure')->user();
 
-    $user = User::updateOrCreate(['email' => $azureUser->email,], [
+    $user = User::updateOrCreate(['email' => $azureUser->email], [
         'name' => $azureUser->name,
         'password' => bcrypt(Str::random(24)),
     ]);
@@ -31,8 +31,9 @@ Route::get('/auth/callback', function () {
     return redirect('/');
 });
 
-Route::get('/{url}', function(Url $url) {
+Route::get('/{url}', function (Url $url) {
     $url->increment('redirect_count');
     $url->update(['last_redirected_at' => now()]);
+
     return redirect($url->long_url);
 })->name('site.redirect');

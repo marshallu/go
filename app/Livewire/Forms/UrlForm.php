@@ -2,32 +2,39 @@
 
 namespace App\Livewire\Forms;
 
-use Livewire\Form;
 use App\Models\Url;
 use App\Rules\IsAllowedDomain;
-use Livewire\Attributes\Validate;
-use Illuminate\Support\Facades\Storage;
-
 use Endroid\QrCode\Color\Color;
 use Endroid\QrCode\Encoding\Encoding;
 use Endroid\QrCode\ErrorCorrectionLevel;
-use Endroid\QrCode\QrCode;
 use Endroid\QrCode\Logo\Logo;
+use Endroid\QrCode\QrCode;
 use Endroid\QrCode\RoundBlockSizeMode;
 use Endroid\QrCode\Writer\SvgWriter;
+use Illuminate\Support\Facades\Storage;
+use Livewire\Attributes\Validate;
+use Livewire\Form;
 
 class UrlForm extends Form
 {
     public ?Url $url;
 
     public $id;
+
     public $long_url;
+
     public $oldLongUrl;
+
     public $base_url;
+
     public $utm_source;
+
     public $utm_medium;
+
     public $utm_campaign;
+
     public $user;
+
     public $foreground_color = 'green';
 
     public $linksTo = 'short';
@@ -49,7 +56,7 @@ class UrlForm extends Form
 
     public function newUrl()
     {
-        $this->url = new Url();
+        $this->url = new Url;
         $this->user = auth()->user();
     }
 
@@ -73,19 +80,19 @@ class UrlForm extends Form
         $queryParams = [];
 
         if ($this->utm_source) {
-            $queryParams[] = 'utm_source=' . $this->utm_source;
+            $queryParams[] = 'utm_source='.$this->utm_source;
         }
 
         if ($this->utm_medium) {
-            $queryParams[] = 'utm_medium=' . $this->utm_medium;
+            $queryParams[] = 'utm_medium='.$this->utm_medium;
         }
 
         if ($this->utm_campaign) {
-            $queryParams[] = 'utm_campaign=' . $this->utm_campaign;
+            $queryParams[] = 'utm_campaign='.$this->utm_campaign;
         }
 
-        if (!empty($queryParams)) {
-            $long_url .= $separator . implode('&', $queryParams);
+        if (! empty($queryParams)) {
+            $long_url .= $separator.implode('&', $queryParams);
         }
 
         return $long_url;
@@ -98,6 +105,7 @@ class UrlForm extends Form
         }
 
         $possibleCharacters = 'abcdefghijkmnopqrstuvwxyz234567890';
+
         return substr(str_shuffle($possibleCharacters), 0, 6);
     }
 
@@ -105,7 +113,7 @@ class UrlForm extends Form
     {
         $this->validate();
 
-        $url = new Url();
+        $url = new Url;
 
         if ($this->customAlias) {
             $url->id = $this->customAlias;
@@ -125,7 +133,7 @@ class UrlForm extends Form
         if ($this->linksTo == 'short') {
             // Changed this line to use the full URL
             $this->createQrCode(
-                'https://go.marshall.edu/' . $url->id,
+                'https://go.marshall.edu/'.$url->id,
                 $url->id,
                 $this->foreground_color
             );
@@ -155,20 +163,20 @@ class UrlForm extends Form
 
     public function createQrCode($url, $id, $foreground_color)
     {
-            \Log::info('createQrCode called', [
-                'url_parameter' => $url,
-                'id_parameter' => $id,
-                'foreground_color' => $foreground_color
-            ]);
+        \Log::info('createQrCode called', [
+            'url_parameter' => $url,
+            'id_parameter' => $id,
+            'foreground_color' => $foreground_color,
+        ]);
 
         // Check if QR code exists, if so remove it.
-        $current_qr_code_file = storage_path('/public/qr_codes/' . $id . '.svg');
+        $current_qr_code_file = storage_path('/public/qr_codes/'.$id.'.svg');
 
         if (file_exists($current_qr_code_file)) {
             unlink($current_qr_code_file);
         }
 
-        $writer = new SvgWriter();
+        $writer = new SvgWriter;
 
         if ($foreground_color === 'green') {
             $foreground_color = new Color(0, 177, 64);
@@ -176,7 +184,7 @@ class UrlForm extends Form
             $foreground_color = new Color(0, 0, 0);
         }
 
-        \Log::info('About to create QR code with URL: ' . $url);
+        \Log::info('About to create QR code with URL: '.$url);
 
         // Create QR code
         $qrCode = QrCode::create($url)
@@ -188,27 +196,27 @@ class UrlForm extends Form
             ->setForegroundColor($foreground_color)
             ->setBackgroundColor(new Color(255, 255, 255));
 
-            // Create generic logo
-            $qrLogo = Logo::create(storage_path('icons/m_primary.svg'))
-                ->setResizeToWidth(500)
-                ->setResizeToHeight(500);
+        // Create generic logo
+        $qrLogo = Logo::create(storage_path('icons/m_primary.svg'))
+            ->setResizeToWidth(500)
+            ->setResizeToHeight(500);
 
-            // Get the string version of the SVG QR code
-            $result = $writer->write($qrCode, $qrLogo)->getString();
+        // Get the string version of the SVG QR code
+        $result = $writer->write($qrCode, $qrLogo)->getString();
 
-            // Get the SVG icon and prep it for preg_replace with back reference
-            $svg_file = file_get_contents(storage_path('icons/m_primary.svg'));
-            $svg_file = str_replace('<?xml version="1.0" encoding="UTF-8"?>', '', $svg_file);
-            $svg_file = str_replace('<svg', '<svg x="$1" y="$2" width="$3" height="$4"', $svg_file);
+        // Get the SVG icon and prep it for preg_replace with back reference
+        $svg_file = file_get_contents(storage_path('icons/m_primary.svg'));
+        $svg_file = str_replace('<?xml version="1.0" encoding="UTF-8"?>', '', $svg_file);
+        $svg_file = str_replace('<svg', '<svg x="$1" y="$2" width="$3" height="$4"', $svg_file);
 
-            // Replace image with SVG icon, use back reference to get the variables we need
-            $result = preg_replace(
-                '/<image x="([\d]+)" y="([\d]+)" width="([\d]+)" height="([\d]+)".*\/>/',
-                $svg_file,
-                $result
-            );
+        // Replace image with SVG icon, use back reference to get the variables we need
+        $result = preg_replace(
+            '/<image x="([\d]+)" y="([\d]+)" width="([\d]+)" height="([\d]+)".*\/>/',
+            $svg_file,
+            $result
+        );
 
-            // Write the files to the cache
-            Storage::put('/public/qr_codes/' . $id . '.svg', $result, 'public');
+        // Write the files to the cache
+        Storage::put('/public/qr_codes/'.$id.'.svg', $result, 'public');
     }
 }

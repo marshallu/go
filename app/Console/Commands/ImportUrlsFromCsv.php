@@ -2,15 +2,17 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
 use App\Models\Url;
+use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
-use function Laravel\Prompts\select;
+
 use function Laravel\Prompts\confirm;
+use function Laravel\Prompts\select;
 
 class ImportUrlsFromCsv extends Command
 {
     protected $signature = 'go:import';
+
     protected $description = 'Import URLs from a CSV file';
 
     public function handle()
@@ -23,14 +25,15 @@ class ImportUrlsFromCsv extends Command
 
         // Get the list of CSV files in storage
         $files = collect(Storage::files('public/exports'))
-            ->filter(fn($file) => str_ends_with($file, '.csv'))
-            ->map(fn($file) => basename($file))
+            ->filter(fn ($file) => str_ends_with($file, '.csv'))
+            ->map(fn ($file) => basename($file))
             ->values()
             ->toArray();
 
         // Ensure there are files available
         if (empty($files)) {
-            $this->error("No CSV files found in storage/exports/");
+            $this->error('No CSV files found in storage/exports/');
+
             return;
         }
 
@@ -41,8 +44,9 @@ class ImportUrlsFromCsv extends Command
 
         $filepath = storage_path("app/public/exports/{$filename}");
 
-        if (!file_exists($filepath)) {
+        if (! file_exists($filepath)) {
             $this->error("File not found: {$filepath}");
+
             return;
         }
 
@@ -63,14 +67,14 @@ class ImportUrlsFromCsv extends Command
                     'utm_campaign' => trim($data['UTM Campaign'] ?: null),
                     'created_by' => trim($data['Created By'] ?: null),
                     'redirect_count' => is_numeric($data['Redirect Count']) ? $data['Redirect Count'] : 0,
-                    'last_redirected_at' => !empty($data['Last Redirected At']) ? $data['Last Redirected At'] : null,
-                    'created_at' => !empty($data['Created At']) ? $data['Created At'] : now(),
+                    'last_redirected_at' => ! empty($data['Last Redirected At']) ? $data['Last Redirected At'] : null,
+                    'created_at' => ! empty($data['Created At']) ? $data['Created At'] : now(),
                     'updated_at' => now(),
                 ]
             );
         }
 
         fclose($file);
-        $this->info("Import successful!");
+        $this->info('Import successful!');
     }
 }

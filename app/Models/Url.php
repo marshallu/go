@@ -12,6 +12,7 @@ class Url extends Model
     protected $guarded = [];
 
     protected $keyType = 'string';
+
     public $incrementing = false;
 
     public $possibleCharacters = 'abcdefghijkmnopqrstuvwxyz234567890';

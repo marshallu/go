@@ -10,7 +10,7 @@ class IsAllowedDomain implements ValidationRule
     /**
      * Run the validation rule.
      *
-     * @param \Closure(string): \Illuminate\Translation\PotentiallyTranslatedString  $fail
+     * @param  \Closure(string): \Illuminate\Translation\PotentiallyTranslatedString  $fail
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
@@ -30,8 +30,8 @@ class IsAllowedDomain implements ValidationRule
 
         $url = parse_url($value);
 
-        if (!in_array($url['host'], $allowedDomains)) {
-            $fail("The :attribute must be a valid domain.");
+        if (! in_array($url['host'], $allowedDomains)) {
+            $fail('The :attribute must be a valid domain.');
         }
     }
 }

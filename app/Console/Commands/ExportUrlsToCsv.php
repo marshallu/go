@@ -2,24 +2,23 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
 use App\Models\Url;
+use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
-use League\Csv\Writer;
-use SplTempFileObject;
 
 class ExportUrlsToCsv extends Command
 {
     protected $signature = 'go:export';
+
     protected $description = 'Export URLs table to a CSV file';
 
     public function handle()
     {
-        $filename = 'urls_export_' . now()->format('Y-m-d_H-i-s') . '.csv';
+        $filename = 'urls_export_'.now()->format('Y-m-d_H-i-s').'.csv';
         $filepath = storage_path("app/public/exports/{$filename}");
 
         // Ensure the directory exists
-        if (!file_exists(dirname($filepath))) {
+        if (! file_exists(dirname($filepath))) {
             mkdir(dirname($filepath), 0755, true);
         }
 

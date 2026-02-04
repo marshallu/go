@@ -28,8 +28,8 @@ class DeleteOldRedirects extends Command
     {
         $urls = Url::where('last_redirected_at', '<', now()->subYears(2))->get();
 
-		$urls->each->delete();
+        $urls->each->delete();
 
-		$this->info("Cleared {$urls->count()} old redirects.");
+        $this->info("Cleared {$urls->count()} old redirects.");
     }
 }
