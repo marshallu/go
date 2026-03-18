@@ -5,9 +5,12 @@ namespace App\Providers;
 use App\Models\Url;
 use Illuminate\Http\Middleware\TrustProxies;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
+use Laravel\Socialite\Contracts\Factory;
+use Laravel\Socialite\Facades\Socialite;
+use SocialiteProviders\Azure\Provider;
+use SocialiteProviders\Manager\Helpers\ConfigRetriever;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -24,8 +27,18 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Event::listen(function (\SocialiteProviders\Manager\SocialiteWasCalled $event) {
-            $event->extendSocialite('azure', \SocialiteProviders\Azure\Provider::class);
+        $this->app->booted(function () {
+            $providerClass = Provider::class;
+            $config = (new ConfigRetriever)
+                ->fromServices('azure', $providerClass::additionalConfigKeys());
+
+            Socialite::extend('azure', function ($app) use ($config, $providerClass) {
+                $provider = $app->make(Factory::class)
+                    ->buildProvider($providerClass, $config->get());
+                $provider->setConfig($config);
+
+                return $provider;
+            });
         });
 
         $admins = ['bajus@marshall.edu', 'davis220@marshall.edu', 'traube3@marshall.edu', 'madden24@marshall.edu', 'cmccomas@marshall.edu'];
