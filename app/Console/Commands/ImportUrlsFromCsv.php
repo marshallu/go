@@ -11,20 +11,20 @@ use function Laravel\Prompts\select;
 
 class ImportUrlsFromCsv extends Command
 {
-    protected $signature = 'go:import';
+    protected $signature = 'go:import {--file=} {--replace : Delete existing URLs before importing}';
 
     protected $description = 'Import URLs from a CSV file';
 
-    public function handle()
+    public function handle(): int
     {
-        $confirmed = confirm('Do you want to delete existing URLS?');
+        $confirmed = $this->option('replace') ?: confirm('Do you want to delete existing URLS?');
 
         if ($confirmed) {
             Url::truncate();
         }
 
         // Get the list of CSV files in storage
-        $files = collect(Storage::files('public/exports'))
+        $files = collect(Storage::disk('public')->files('exports'))
             ->filter(fn ($file) => str_ends_with($file, '.csv'))
             ->map(fn ($file) => basename($file))
             ->values()
@@ -34,25 +34,35 @@ class ImportUrlsFromCsv extends Command
         if (empty($files)) {
             $this->error('No CSV files found in storage/exports/');
 
-            return;
+            return self::FAILURE;
         }
 
-        $filename = select(
-            label: 'Select a CSV file to import',
-            options: $files
-        );
+        $filename = $this->option('file') ?: select(label: 'Select a CSV file to import', options: $files);
 
-        $filepath = storage_path("app/public/exports/{$filename}");
+        if (! in_array($filename, $files, true)) {
+            $this->error("File not found: {$filename}");
+
+            return self::FAILURE;
+        }
+
+        $filepath = Storage::disk('public')->path('exports/'.$filename);
 
         if (! file_exists($filepath)) {
             $this->error("File not found: {$filepath}");
 
-            return;
+            return self::FAILURE;
         }
 
         // Open CSV file and process it
         $file = fopen($filepath, 'r');
         $headers = fgetcsv($file);
+
+        if ($headers === false) {
+            fclose($file);
+            $this->error('The CSV file is empty.');
+
+            return self::FAILURE;
+        }
 
         while (($row = fgetcsv($file)) !== false) {
             $data = array_combine($headers, $row);
@@ -61,11 +71,11 @@ class ImportUrlsFromCsv extends Command
                 ['id' => $data['ID']],
                 [
                     'long_url' => trim($data['Long URL']),
-                    'base_url' => trim($data['Base URL']), // Ensure it's not null
-                    'utm_source' => trim($data['UTM Source'] ?: null),
-                    'utm_medium' => trim($data['UTM Medium'] ?: null),
-                    'utm_campaign' => trim($data['UTM Campaign'] ?: null),
-                    'created_by' => trim($data['Created By'] ?: null),
+                    'base_url' => trim($data['Base URL']),
+                    'utm_source' => $data['UTM Source'] === '' ? null : trim($data['UTM Source']),
+                    'utm_medium' => $data['UTM Medium'] === '' ? null : trim($data['UTM Medium']),
+                    'utm_campaign' => $data['UTM Campaign'] === '' ? null : trim($data['UTM Campaign']),
+                    'created_by' => $data['Created By'] === '' ? null : trim($data['Created By']),
                     'redirect_count' => is_numeric($data['Redirect Count']) ? $data['Redirect Count'] : 0,
                     'last_redirected_at' => ! empty($data['Last Redirected At']) ? $data['Last Redirected At'] : null,
                     'created_at' => ! empty($data['Created At']) ? $data['Created At'] : now(),
@@ -76,5 +86,7 @@ class ImportUrlsFromCsv extends Command
 
         fclose($file);
         $this->info('Import successful!');
+
+        return self::SUCCESS;
     }
 }

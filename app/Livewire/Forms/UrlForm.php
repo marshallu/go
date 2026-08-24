@@ -54,13 +54,13 @@ class UrlForm extends Form
         ];
     }
 
-    public function newUrl()
+    public function newUrl(): void
     {
         $this->url = new Url;
         $this->user = auth()->user();
     }
 
-    public function setUrl(Url $url)
+    public function setUrl(Url $url): void
     {
         $this->url = $url;
         $this->id = $url->id;
@@ -72,7 +72,7 @@ class UrlForm extends Form
         $this->oldLongUrl = $url->long_url;
     }
 
-    private function getUrl()
+    private function getUrl(): string
     {
         $long_url = $this->base_url;
         $separator = (str_contains($long_url, '?')) ? '&' : '?';
@@ -98,7 +98,7 @@ class UrlForm extends Form
         return $long_url;
     }
 
-    private function getId()
+    private function getId(): string
     {
         if ($this->id) {
             return $this->id;
@@ -109,7 +109,7 @@ class UrlForm extends Form
         return substr(str_shuffle($possibleCharacters), 0, 6);
     }
 
-    public function store()
+    public function store(): mixed
     {
         $this->validate();
 
@@ -131,9 +131,8 @@ class UrlForm extends Form
         $url->save();
 
         if ($this->linksTo == 'short') {
-            // Changed this line to use the full URL
             $this->createQrCode(
-                'https://go.marshall.edu/'.$url->id,
+                rtrim(config('app.url'), '/').'/'.$url->id,
                 $url->id,
                 $this->foreground_color
             );
@@ -144,7 +143,7 @@ class UrlForm extends Form
         return redirect()->route('urls.edit', $url);
     }
 
-    public function update()
+    public function update(): void
     {
         $this->validate();
 
@@ -161,62 +160,46 @@ class UrlForm extends Form
         }
     }
 
-    public function createQrCode($url, $id, $foreground_color)
+    public function createQrCode(string $url, string $id, string $foregroundColor): void
     {
-        \Log::info('createQrCode called', [
-            'url_parameter' => $url,
-            'id_parameter' => $id,
-            'foreground_color' => $foreground_color,
-        ]);
+        $disk = Storage::disk('public');
+        $path = 'qr_codes/'.$id.'.svg';
 
-        // Check if QR code exists, if so remove it.
-        $current_qr_code_file = storage_path('/public/qr_codes/'.$id.'.svg');
-
-        if (file_exists($current_qr_code_file)) {
-            unlink($current_qr_code_file);
-        }
+        $disk->delete($path);
 
         $writer = new SvgWriter;
 
-        if ($foreground_color === 'green') {
-            $foreground_color = new Color(0, 177, 64);
+        if ($foregroundColor === 'green') {
+            $foregroundColor = new Color(0, 177, 64);
         } else {
-            $foreground_color = new Color(0, 0, 0);
+            $foregroundColor = new Color(0, 0, 0);
         }
 
-        \Log::info('About to create QR code with URL: '.$url);
-
-        // Create QR code
         $qrCode = QrCode::create($url)
             ->setEncoding(new Encoding('ISO-8859-1'))
             ->setErrorCorrectionLevel(ErrorCorrectionLevel::High)
             ->setSize(1080)
             ->setMargin(36)
             ->setRoundBlockSizeMode(RoundBlockSizeMode::Margin)
-            ->setForegroundColor($foreground_color)
+            ->setForegroundColor($foregroundColor)
             ->setBackgroundColor(new Color(255, 255, 255));
 
-        // Create generic logo
         $qrLogo = Logo::create(storage_path('icons/m_primary.svg'))
             ->setResizeToWidth(500)
             ->setResizeToHeight(500);
 
-        // Get the string version of the SVG QR code
         $result = $writer->write($qrCode, $qrLogo)->getString();
 
-        // Get the SVG icon and prep it for preg_replace with back reference
         $svg_file = file_get_contents(storage_path('icons/m_primary.svg'));
         $svg_file = str_replace('<?xml version="1.0" encoding="UTF-8"?>', '', $svg_file);
         $svg_file = str_replace('<svg', '<svg x="$1" y="$2" width="$3" height="$4"', $svg_file);
 
-        // Replace image with SVG icon, use back reference to get the variables we need
         $result = preg_replace(
             '/<image x="([\d]+)" y="([\d]+)" width="([\d]+)" height="([\d]+)".*\/>/',
             $svg_file,
             $result
         );
 
-        // Write the files to the cache
-        Storage::put('/public/qr_codes/'.$id.'.svg', $result, 'public');
+        $disk->put($path, $result);
     }
 }

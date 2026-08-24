@@ -15,7 +15,7 @@ class extends Component
 
 	public function mount(Url $url)
     {
-		if (!Gate::allows('edit-url', $this->url)) {
+		if (! Gate::allows('edit-url', $url)) {
             abort(403, 'Unauthorized access.');
         }
 

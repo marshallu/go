@@ -2,6 +2,7 @@
 
 use App\Models\Url;
 use App\Models\User;
+use Illuminate\Support\Facades\Storage;
 use Livewire\Livewire;
 
 test('create page renders for authenticated user', function () {
@@ -28,6 +29,7 @@ test('can create url with valid marshall.edu domain', function () {
 });
 
 test('can create url with custom alias', function () {
+    Storage::fake('public');
     $user = User::factory()->create();
 
     $this->actingAs($user);
@@ -38,6 +40,50 @@ test('can create url with custom alias', function () {
         ->call('store');
 
     expect(Url::find('apply'))->not->toBeNull();
+    Storage::disk('public')->assertExists('qr_codes/apply.svg');
+});
+
+test('adds UTM parameters after an existing query string', function () {
+    $user = User::factory()->create();
+
+    $this->actingAs($user);
+
+    Livewire::test('pages::urls.create')
+        ->set('form.base_url', 'https://www.marshall.edu/admissions?source=site')
+        ->set('form.utm_source', 'salesforce')
+        ->call('store');
+
+    expect(Url::first()->long_url)->toBe('https://www.marshall.edu/admissions?source=site&utm_source=salesforce');
+});
+
+test('can generate a black QR code for the full destination URL', function () {
+    Storage::fake('public');
+    $user = User::factory()->create();
+
+    $this->actingAs($user);
+
+    Livewire::test('pages::urls.create')
+        ->set('form.base_url', 'https://www.marshall.edu/admissions')
+        ->set('form.customAlias', 'fullqr')
+        ->set('form.linksTo', 'full')
+        ->set('form.foreground_color', 'black')
+        ->call('store')
+        ->assertRedirect(route('urls.edit', 'fullqr'));
+
+    expect(Storage::disk('public')->get('qr_codes/fullqr.svg'))->toContain('fill="#000000"');
+});
+
+test('enforces custom alias and UTM length boundaries', function () {
+    $user = User::factory()->create();
+
+    $this->actingAs($user);
+
+    Livewire::test('pages::urls.create')
+        ->set('form.base_url', 'https://www.marshall.edu/admissions')
+        ->set('form.customAlias', str_repeat('a', 25))
+        ->set('form.utm_campaign', str_repeat('a', 51))
+        ->call('store')
+        ->assertHasErrors(['form.customAlias', 'form.utm_campaign']);
 });
 
 test('can create url with utm parameters', function () {
