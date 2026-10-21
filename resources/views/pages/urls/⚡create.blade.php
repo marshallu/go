@@ -28,11 +28,9 @@ class extends Component
 ?>
 
 <div class="max-w-2xl px-6 mx-auto">
-	@can('super-admin')
-		<div class="mb-4 flex justify-end">
-			<flux:link href="{{ route('urls.index') }}">View all URLs</flux:link>
-		</div>
-	@endcan
+	<div class="mb-4 flex justify-end">
+		<flux:link href="{{ route('urls.index') }}">@can('super-admin') View all URLs @else View your URLs @endcan</flux:link>
+	</div>
 
 	@if($errors->any())
 		<flux:callout variant="danger">

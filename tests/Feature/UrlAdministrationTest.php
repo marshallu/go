@@ -4,10 +4,46 @@ use App\Models\Url;
 use App\Models\User;
 use Livewire\Livewire;
 
-test('the URL index is restricted to administrators', function () {
+test('non-administrators only see their own URLs on the index', function () {
     $user = User::factory()->create();
+    $otherUser = User::factory()->create();
+    Url::factory()->create(['id' => 'mine01', 'user_id' => $user->id]);
+    Url::factory()->create(['id' => 'theirs', 'user_id' => $otherUser->id]);
 
-    $this->actingAs($user)->get('/urls')->assertForbidden();
+    $this->actingAs($user)
+        ->get('/urls')
+        ->assertOk()
+        ->assertSee('mine01')
+        ->assertDontSee('theirs');
+});
+
+test('non-administrators cannot see other users URLs by filtering by user', function () {
+    $user = User::factory()->create();
+    $otherUser = User::factory()->create();
+    Url::factory()->create(['id' => 'theirs', 'user_id' => $otherUser->id]);
+
+    $this->actingAs($user);
+
+    Livewire::test('pages::urls.index')
+        ->set('userSearch', $otherUser->id)
+        ->assertDontSee('theirs');
+});
+
+test('non-administrators can delete their own URLs but not others', function () {
+    $user = User::factory()->create();
+    $otherUser = User::factory()->create();
+    Url::factory()->create(['id' => 'mine01', 'user_id' => $user->id]);
+    Url::factory()->create(['id' => 'theirs', 'user_id' => $otherUser->id]);
+
+    $this->actingAs($user);
+
+    Livewire::test('pages::urls.index')->call('deleteUrl', 'mine01');
+    expect(Url::find('mine01'))->toBeNull();
+
+    Livewire::test('pages::urls.index')
+        ->call('deleteUrl', 'theirs')
+        ->assertForbidden();
+    expect(Url::find('theirs'))->not->toBeNull();
 });
 
 test('administrators can search, filter, sort, paginate, and delete URLs', function () {

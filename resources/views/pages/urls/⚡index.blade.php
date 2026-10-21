@@ -22,16 +22,15 @@ new class extends Component
         $this->resetPage();
     }
 
-	public function mount(Url $url)
-    {
-		if (!Gate::allows('super-admin')) {
-            abort(403, 'Unauthorized access.');
-        }
-    }
-
 	public function deleteUrl($id)
     {
-        Url::find($id)->delete();
+        $url = Url::findOrFail($id);
+
+        if (! Gate::allows('edit-url', $url)) {
+            abort(403, 'Unauthorized access.');
+        }
+
+        $url->delete();
     }
 
 	 public function sort($column) {
@@ -47,6 +46,7 @@ new class extends Component
 	public function urls()
 	{
 		return Url::query()
+			->when(! Gate::allows('super-admin'), fn($query) => $query->where('user_id', auth()->id()))
 			->when($this->search, fn($query) => $query->where('long_url', 'like', '%' . $this->search . '%'))
 			->when($this->userSearch, fn($query) => $query->where('user_id', $this->userSearch))
 			->tap(fn($query) => $this->sortBy ? $query->orderBy($this->sortBy, $this->sortDirection) : $query)
@@ -56,7 +56,7 @@ new class extends Component
 	public function with(): array
     {
         return [
-            'users' => User::orderBy('email', 'asc')->get(),
+            'users' => Gate::allows('super-admin') ? User::orderBy('email', 'asc')->get() : collect(),
         ];
     }
 };
@@ -66,12 +66,14 @@ new class extends Component
 	<form class="grid lg:grid-cols-2 gap-12">
 		<flux:input wire:model.live="search" label="Search for a URL" placeholder="Search for a URL" />
 
-		<flux:select wire:model.live="userSearch" label="Search by user" placeholder="Users...">
-			<flux:select.option value="">All Users</flux:select.option>
-			@foreach($users as $user)
-				<flux:select.option value="{{ $user->id }}">{{ $user->name }}</flux:select.option>
-			@endforeach
-		</flux:select>
+		@can('super-admin')
+			<flux:select wire:model.live="userSearch" label="Search by user" placeholder="Users...">
+				<flux:select.option value="">All Users</flux:select.option>
+				@foreach($users as $user)
+					<flux:select.option value="{{ $user->id }}">{{ $user->name }}</flux:select.option>
+				@endforeach
+			</flux:select>
+		@endcan
 	</form>
 
 	<flux:table :paginate="$this->urls" class="mt-8">

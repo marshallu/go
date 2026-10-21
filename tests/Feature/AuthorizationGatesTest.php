@@ -66,3 +66,13 @@ test('all admins have super-admin access', function () {
         expect(Gate::allows('super-admin'))->toBeTrue();
     }
 });
+
+test('edit-url gate allows owner when user_id is loaded as a string', function () {
+    $user = User::factory()->create();
+    $url = Url::factory()->create(['user_id' => $user->id]);
+    $url->setRawAttributes(array_merge($url->getAttributes(), ['user_id' => (string) $user->id]));
+
+    $this->actingAs($user);
+
+    expect(Gate::allows('edit-url', $url))->toBeTrue();
+});

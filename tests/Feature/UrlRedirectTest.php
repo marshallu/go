@@ -60,12 +60,12 @@ test('authenticated user can access create page', function () {
         ->assertOk();
 });
 
-test('only admin can access urls index', function () {
+test('non-admin users can access urls index', function () {
     $user = User::factory()->create();
 
     $this->actingAs($user)
         ->get('/urls')
-        ->assertForbidden();
+        ->assertOk();
 });
 
 test('admin can access urls index', function () {

@@ -17,6 +17,16 @@ class Url extends Model
 
     public $possibleCharacters = 'abcdefghijkmnopqrstuvwxyz234567890';
 
+    /**
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'user_id' => 'integer',
+        ];
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class);
