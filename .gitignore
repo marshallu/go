@@ -18,6 +18,7 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
+/.amp/portals/
 .DS_Store
 /storage/logs/
 /storage/app/public/*

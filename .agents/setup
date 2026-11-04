@@ -1,0 +1,138 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$repo_root"
+
+run_step() {
+    local label="$1"
+    shift
+    local started_at=$SECONDS
+
+    printf '\n==> %s\n' "$label"
+    "$@"
+    printf '    completed in %ss\n' "$((SECONDS - started_at))"
+}
+
+install_system_dependencies() {
+    local packages=(
+        ca-certificates
+        curl
+        git
+        php8.4-cli
+        php8.4-curl
+        php8.4-intl
+        php8.4-mbstring
+        php8.4-sqlite3
+        php8.4-xml
+        php8.4-zip
+        sqlite3
+        unzip
+    )
+    local missing_packages=()
+
+    for package in "${packages[@]}"; do
+        if ! dpkg-query -W -f='${Status}' "$package" 2>/dev/null | grep -q 'ok installed'; then
+            missing_packages+=("$package")
+        fi
+    done
+
+    if ((${#missing_packages[@]} == 0)); then
+        printf '    system packages already installed\n'
+        return
+    fi
+
+    if ! apt-cache show php8.4-cli >/dev/null 2>&1; then
+        sudo apt-get update -qq
+        sudo env DEBIAN_FRONTEND=noninteractive apt-get install -y -qq ca-certificates curl lsb-release
+        curl -fsSL https://packages.sury.org/php/apt.gpg | sudo gpg --dearmor --yes -o /usr/share/keyrings/deb.sury.org-php.gpg
+        printf 'deb [signed-by=/usr/share/keyrings/deb.sury.org-php.gpg] https://packages.sury.org/php/ %s main\n' "$(lsb_release -sc)" |
+            sudo tee /etc/apt/sources.list.d/php.list >/dev/null
+    fi
+
+    sudo apt-get update -qq
+    sudo env DEBIAN_FRONTEND=noninteractive apt-get install -y -qq "${missing_packages[@]}"
+}
+
+install_composer() {
+    if command -v composer >/dev/null 2>&1 && composer --version --no-ansi | grep -Eq 'version 2\.(9|[1-9][0-9])\.'; then
+        composer --version --no-ansi
+        return
+    fi
+
+    local installer=/tmp/composer-setup.php
+    local expected_signature
+    local actual_signature
+
+    expected_signature="$(curl -fsSL https://composer.github.io/installer.sig)"
+    curl -fsSL https://getcomposer.org/installer -o "$installer"
+    actual_signature="$(php -r "echo hash_file('sha384', '$installer');")"
+
+    if [[ "$expected_signature" != "$actual_signature" ]]; then
+        rm -f "$installer"
+        printf 'Composer installer signature mismatch\n' >&2
+        return 1
+    fi
+
+    sudo php "$installer" --2 --install-dir=/usr/local/bin --filename=composer --quiet
+    rm -f "$installer"
+    composer --version --no-ansi
+}
+
+install_php_dependencies() {
+    if [[ -z "${FLUX_USERNAME:-}" ]] || [[ -z "${FLUX_LICENSE_KEY:-}" ]]; then
+        printf 'FLUX_USERNAME and FLUX_LICENSE_KEY project secrets are required to install Flux Pro.\n' >&2
+        return 1
+    fi
+
+    local composer_auth
+    composer_auth="$(php -r 'echo json_encode(["http-basic" => ["composer.fluxui.dev" => ["username" => getenv("FLUX_USERNAME"), "password" => getenv("FLUX_LICENSE_KEY")]]], JSON_UNESCAPED_SLASHES);')"
+
+    COMPOSER_ALLOW_SUPERUSER=1 COMPOSER_AUTH="$composer_auth" composer install \
+        --no-interaction \
+        --no-progress \
+        --prefer-dist \
+        --optimize-autoloader
+}
+
+install_node_dependencies() {
+    local dependency_fingerprint
+    local fingerprint_file=node_modules/.amp-dependency-fingerprint
+
+    dependency_fingerprint="$(sha256sum package-lock.json | cut -d' ' -f1)-$(node --version)-$(npm --version)"
+
+    if [[ -f "$fingerprint_file" ]] && [[ "$(cat "$fingerprint_file")" == "$dependency_fingerprint" ]]; then
+        printf '    Node dependencies already match package-lock.json\n'
+        return
+    fi
+
+    npm ci --no-audit --no-fund
+    printf '%s\n' "$dependency_fingerprint" > "$fingerprint_file"
+}
+
+prepare_application() {
+    if [[ ! -f .env ]]; then
+        cp -- .env.example .env
+        sed -i \
+            -e 's/^DB_CONNECTION=.*/DB_CONNECTION=sqlite/' \
+            -e "s|^DB_DATABASE=.*|DB_DATABASE=$repo_root/database/database.sqlite|" \
+            .env
+    fi
+
+    mkdir -p bootstrap/cache storage/framework/cache/data storage/framework/sessions storage/framework/views storage/logs
+    touch database/database.sqlite
+
+    if ! grep -Eq '^APP_KEY=.+$' .env; then
+        php artisan key:generate --force --no-interaction
+    fi
+
+    php artisan migrate --force --no-interaction
+}
+
+run_step 'Installing system dependencies' install_system_dependencies
+run_step 'Installing Composer' install_composer
+run_step 'Installing PHP dependencies' install_php_dependencies
+run_step 'Installing Node dependencies' install_node_dependencies
+run_step 'Preparing Laravel application' prepare_application
+
+printf '\nOrb setup complete in %ss.\n' "$SECONDS"
