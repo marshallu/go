@@ -1,7 +1,13 @@
 <?php
 
 use App\Models\User;
+use Illuminate\Auth\Events\Login;
+use Illuminate\Support\Facades\Event;
 use Laravel\Socialite\Facades\Socialite;
+
+beforeEach(function () {
+    Event::fake([Login::class]);
+});
 
 test('login redirects to the Azure authorization route', function () {
     $this->get('/login')->assertRedirect('/auth/redirect');
