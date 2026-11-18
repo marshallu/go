@@ -84,6 +84,15 @@ test('allows auth.marshall.edu domain', function () {
     expect($validator->passes())->toBeTrue();
 });
 
+test('allows apps.marshall.edu domain', function () {
+    $validator = Validator::make(
+        ['url' => 'https://apps.marshall.edu/form'],
+        ['url' => ['required', 'url', new IsAllowedDomain]]
+    );
+
+    expect($validator->passes())->toBeTrue();
+});
+
 test('rejects google.com domain', function () {
     $validator = Validator::make(
         ['url' => 'https://www.google.com'],

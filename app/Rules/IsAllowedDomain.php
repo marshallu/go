@@ -4,13 +4,14 @@ namespace App\Rules;
 
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
+use Illuminate\Translation\PotentiallyTranslatedString;
 
 class IsAllowedDomain implements ValidationRule
 {
     /**
      * Run the validation rule.
      *
-     * @param  \Closure(string): \Illuminate\Translation\PotentiallyTranslatedString  $fail
+     * @param  Closure(string): PotentiallyTranslatedString  $fail
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
@@ -26,6 +27,7 @@ class IsAllowedDomain implements ValidationRule
             'youtube.com',
             'www.marshallhealth.org',
             'auth.marshall.edu',
+            'apps.marshall.edu',
         ];
 
         $url = parse_url($value);
