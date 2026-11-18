@@ -62,7 +62,7 @@ class extends Component
 			<flux:field>
 				<flux:label>The current QR Code</flux:label>
 
-				<img src="{{ asset('storage/qr_codes/' . $url->id . '.svg') }}" class="h-40 w-40" />
+				<img src="{{ Storage::disk('public')->url('qr_codes/' . $url->id . '.svg') }}" class="h-40 w-40" />
 
 				<flux:description>Right click and save the QR code to use in your materials.</flux:description>
 			</flux:field>

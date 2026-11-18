@@ -160,7 +160,7 @@ class UrlForm extends Form
         }
     }
 
-    public function createQrCode(string $url, string $id, string $foregroundColor): void
+    public static function createQrCode(string $url, string $id, string $foregroundColor): void
     {
         $disk = Storage::disk('public');
         $path = 'qr_codes/'.$id.'.svg';

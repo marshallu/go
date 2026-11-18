@@ -19,6 +19,16 @@ test('edit page renders for url owner', function () {
         ->assertSeeLivewire('pages::urls.edit');
 });
 
+test('edit page shows the qr code from the public disk url', function () {
+    config(['filesystems.disks.public.url' => 'https://bucket.example.com']);
+    $user = User::factory()->create();
+    $url = Url::factory()->create(['user_id' => $user->id]);
+
+    $this->actingAs($user)
+        ->get("/{$url->id}/edit")
+        ->assertSee('src="https://bucket.example.com/qr_codes/'.$url->id.'.svg"', false);
+});
+
 test('edit page renders for admin', function () {
     $admin = User::factory()->create(['email' => 'cmccomas@marshall.edu']);
     $otherUser = User::factory()->create();
