@@ -30,9 +30,9 @@ class IsAllowedDomain implements ValidationRule
             'apps.marshall.edu',
         ];
 
-        $url = parse_url($value);
+        $host = is_string($value) ? parse_url($value, PHP_URL_HOST) : null;
 
-        if (! in_array($url['host'], $allowedDomains)) {
+        if (! in_array($host, $allowedDomains, true)) {
             $fail('The :attribute must be a valid domain.');
         }
     }
